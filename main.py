@@ -17,7 +17,7 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 members = {
     "lawganeyyeol.": "โฟม",
     "inginging_23354": "อิง",
-    "User3#3456": "คนที่ 3"
+    "heart2952": "ฮาร์ท"
 }
 
 payment_status = {}
@@ -27,7 +27,7 @@ def reset_payment_status():
     return {
         "โฟม": False,
         "อิง": False,
-        "คนที่ 3": False,
+        "ฮาร์ท": False,
         "เดือน": month
     }
 
