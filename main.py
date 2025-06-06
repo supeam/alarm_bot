@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands, tasks
 import datetime
 import os
+import json
 from keep_alive import keep_alive
 
 TOKEN = os.environ['TOKEN']
@@ -31,7 +32,18 @@ def reset_payment_status():
         "เดือน": month
     }
 
-payment_status = reset_payment_status()
+def save_status():
+    with open("payment_status.json", "w", encoding="utf-8") as f:
+        json.dump(payment_status, f, ensure_ascii=False)
+
+def load_status():
+    global payment_status
+    try:
+        with open("payment_status.json", "r", encoding="utf-8") as f:
+            payment_status.update(json.load(f))
+    except FileNotFoundError:
+        payment_status.update(reset_payment_status())
+        save_status()
 
 @tasks.loop(time=datetime.time(hour=9, minute=0))  # ทุกวันเวลา 9:00 AM
 async def monthly_reminder():
@@ -39,13 +51,14 @@ async def monthly_reminder():
     if now.day == 1:
         global payment_status
         payment_status = reset_payment_status()  # รีเซ็ตสถานะใหม่ทุกเดือน
+        save_status()
         channel = bot.get_channel(CHANNEL_ID)
         if isinstance(channel, discord.TextChannel):
             await channel.send("🔔 วันนี้วันที่ 1 แล้ว! อย่าลืมจ่ายเงินนะครับ 💸")
 
 @bot.event
 async def on_ready():
-    #print(f"[READY] Logged in as {bot.user}")
+    load_status()
     monthly_reminder.start()
 
 @bot.event
@@ -62,6 +75,7 @@ async def on_message(message):
         if username in members:
             member_name = members[username]
             payment_status[member_name] = True
+            save_status()
             await message.channel.send(f"{member_name} ได้จ่ายแล้ว ✅")
             await send_status(message.channel)
         else:
@@ -81,8 +95,8 @@ async def เช็คสถานะ(ctx):
 async def รีเซ็ต(ctx):
     global payment_status
     payment_status = reset_payment_status()
+    save_status()
     await ctx.send("🔁 รีเซ็ตสถานะจ่ายเงินเรียบร้อย")
 
 keep_alive()  # เรียกก่อน bot.run(TOKEN)
 bot.run(TOKEN)
-
