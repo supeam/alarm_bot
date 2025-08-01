@@ -17,7 +17,7 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 # รายชื่อสมาชิกที่สามารถจ่ายเงินได้
 members = {
     "lawganeyyeol.": "โฟม",
-    "inginging811 ": "อิง",
+    "supeam": "อิง",
     "heart2952": "ฮาร์ท"
 }
 
