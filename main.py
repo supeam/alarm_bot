@@ -5,16 +5,16 @@ import os
 import json
 from keep_alive import keep_alive
 
-TOKEN = os.environ['TOKEN']
-CHANNEL_ID = 1326096175748612200  # ใส่ Channel ID ที่คุณต้องการให้บอททำงาน
+TOKEN = os.environ['TOKEN']  # ต้องตั้ง Environment Variable ชื่อ TOKEN ใน Replit
+CHANNEL_ID = 1326096175748612200  # เปลี่ยนเป็น ID ของช่อง Discord ที่คุณใช้
 
 intents = discord.Intents.default()
-intents.message_content = True  # สำคัญ ต้องเปิด!
+intents.message_content = True
 intents.messages = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# รายชื่อสมาชิกที่สามารถจ่ายเงินได้
+# รายชื่อสมาชิกที่สามารถจ่ายเงินได้ (ชื่อ Discord username เฉพาะส่วนหน้า)
 members = {
     "lawganeyyeol.": "โฟม",
     "supeam": "อิง",
@@ -45,12 +45,12 @@ def load_status():
         payment_status.update(reset_payment_status())
         save_status()
 
-@tasks.loop(time=datetime.time(hour=9, minute=0))  # ทุกวันเวลา 9:00 AM
+@tasks.loop(time=datetime.time(hour=9, minute=0))  # แจ้งเตือนทุกวันเวลา 09:00
 async def monthly_reminder():
     now = datetime.datetime.now()
     if now.day == 1:
         global payment_status
-        payment_status = reset_payment_status()  # รีเซ็ตสถานะใหม่ทุกเดือน
+        payment_status = reset_payment_status()
         save_status()
         channel = bot.get_channel(CHANNEL_ID)
         if isinstance(channel, discord.TextChannel):
@@ -60,17 +60,18 @@ async def monthly_reminder():
 async def on_ready():
     load_status()
     monthly_reminder.start()
+    print(f"[READY] Logged in as {bot.user}")
 
 @bot.event
 async def on_message(message):
-    print(f"[DEBUG] ได้รับข้อความจาก: {message.author} ในช่อง {message.channel.name}")
+    print(f"[DEBUG] ได้รับข้อความจาก: {message.author.name} ในช่อง {message.channel.name}")
     print(f"[DEBUG] แนบไฟล์: {message.attachments}")
 
     if message.channel.id != CHANNEL_ID or message.author.bot:
         return
 
     if message.attachments:
-        username = str(message.author)  # เปลี่ยนจาก message.author.name
+        username = message.author.name  # ✅ ใช้เฉพาะชื่อ (ไม่รวม tag เช่น #1234)
         print(f"[DEBUG] ผู้ส่งแนบไฟล์: {username}")
         if username in members:
             member_name = members[username]
@@ -98,5 +99,6 @@ async def รีเซ็ต(ctx):
     save_status()
     await ctx.send("🔁 รีเซ็ตสถานะจ่ายเงินเรียบร้อย")
 
-keep_alive()  # เรียกก่อน bot.run(TOKEN)
+# เรียก Flask server จาก keep_alive.py
+keep_alive()
 bot.run(TOKEN)
