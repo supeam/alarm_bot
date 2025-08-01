@@ -70,7 +70,7 @@ async def on_message(message):
         return
 
     if message.attachments:
-        username = message.author.name
+        username = str(message.author)  # เปลี่ยนจาก message.author.name
         print(f"[DEBUG] ผู้ส่งแนบไฟล์: {username}")
         if username in members:
             member_name = members[username]
