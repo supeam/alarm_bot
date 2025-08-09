@@ -14,11 +14,11 @@ intents.messages = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# รายชื่อสมาชิกที่สามารถจ่ายเงินได้ (ชื่อ Discord username เฉพาะส่วนหน้า)
+# ✅ รายชื่อสมาชิกเป็น User ID (int) : ชื่อเล่น
 members = {
-    "lawganeyyeol.": "โฟม",
-    "SUPEAM#6729": "อิง",
-    "heart2952": "ฮาร์ท"
+    327486022306758678: "โฟม",  # lawganeyyeol.
+    545611523054108672: "อิง",  # supeam
+    428101345401241601: "ฮาร์ท" # heart2952
 }
 
 payment_status = {}
@@ -64,23 +64,22 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
-    print(f"[DEBUG] ได้รับข้อความจาก: {message.author.name} ในช่อง {message.channel.name}")
+    print(f"[DEBUG] ได้รับข้อความจาก: {message.author} (ID: {message.author.id}) ในช่อง {message.channel.name}")
     print(f"[DEBUG] แนบไฟล์: {message.attachments}")
 
     if message.channel.id != CHANNEL_ID or message.author.bot:
         return
 
     if message.attachments:
-    username = str(message.author)  # ได้ชื่อพร้อม tag เช่น supeam#1234
-    print(f"[DEBUG] ผู้ส่งแนบไฟล์: {username}")
-    if username in members:
-        member_name = members[username]
-        payment_status[member_name] = True
-        save_status()
-        await message.channel.send(f"{member_name} ได้จ่ายแล้ว ✅")
-        await send_status(message.channel)
-    else:
-        await message.channel.send(f"ชื่อ {username} ยังไม่อยู่ในระบบ ❌")
+        user_id = message.author.id  # ✅ ใช้ ID แทนชื่อ
+        if user_id in members:
+            member_name = members[user_id]
+            payment_status[member_name] = True
+            save_status()
+            await message.channel.send(f"{member_name} ได้จ่ายแล้ว ✅")
+            await send_status(message.channel)
+        else:
+            await message.channel.send(f"ID {user_id} ยังไม่อยู่ในระบบ ❌")
 
     await bot.process_commands(message)
 
