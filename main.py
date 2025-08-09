@@ -16,8 +16,8 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 # ✅ รายชื่อสมาชิกเป็น User ID (int) : ชื่อเล่น
 members = {
-    327486022306758678: "โฟม",  # lawganeyyeol.
-    545611523054108672: "อิง",  # supeam
+    545611523054108672: "โฟม",  # lawganeyyeol.
+    564079563840421888: "อิง",  # supeam
     428101345401241601: "ฮาร์ท" # heart2952
 }
 
