@@ -79,8 +79,7 @@ async def on_message(message):
             save_status()
             await message.channel.send(f"{member_name} ได้จ่ายแล้ว ✅")
             await send_status(message.channel)
-        else:
-            await message.channel.send(f"ชื่อ {username} ยังไม่อยู่ในระบบ ❌")
+        
 
     await bot.process_commands(message)
 
