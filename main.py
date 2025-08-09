@@ -17,7 +17,7 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 # รายชื่อสมาชิกที่สามารถจ่ายเงินได้ (ชื่อ Discord username เฉพาะส่วนหน้า)
 members = {
     "lawganeyyeol.": "โฟม",
-    "supeam": "อิง",
+    "SUPEAM#6729": "อิง",
     "heart2952": "ฮาร์ท"
 }
 
@@ -71,15 +71,16 @@ async def on_message(message):
         return
 
     if message.attachments:
-        username = message.author.name  # ✅ ใช้เฉพาะชื่อ (ไม่รวม tag เช่น #1234)
-        print(f"[DEBUG] ผู้ส่งแนบไฟล์: {username}")
-        if username in members:
-            member_name = members[username]
-            payment_status[member_name] = True
-            save_status()
-            await message.channel.send(f"{member_name} ได้จ่ายแล้ว ✅")
-            await send_status(message.channel)
-        
+    username = str(message.author)  # ได้ชื่อพร้อม tag เช่น supeam#1234
+    print(f"[DEBUG] ผู้ส่งแนบไฟล์: {username}")
+    if username in members:
+        member_name = members[username]
+        payment_status[member_name] = True
+        save_status()
+        await message.channel.send(f"{member_name} ได้จ่ายแล้ว ✅")
+        await send_status(message.channel)
+    else:
+        await message.channel.send(f"ชื่อ {username} ยังไม่อยู่ในระบบ ❌")
 
     await bot.process_commands(message)
 
